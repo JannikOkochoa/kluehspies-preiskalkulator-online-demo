@@ -44,15 +44,15 @@ export function simulateIndividualPrice(input,offer){
  const components=[],add=(title,detail,amount)=>{
   if(amount!==0)components.push({title,detail,amount});
  };
- add("Reisepaket – Muster-Tagesrate",paying+" zahlende Personen × "+days+" Tage × "+money(sampleDailyRate[offer.category]),paying*days*sampleDailyRate[offer.category]);
- add("Reisezeitraum – Muster-Saisonfaktor",paying+" × "+money(seasonRate),paying*seasonRate);
- add("Abfahrtsregion – Muster-PLZ-Staffel",paying+" × "+money(regionRate),paying*regionRate);
- add("Anreise – Musteranpassung",paying+" × "+money(transportRate),paying*transportRate);
- add("Unterkunft – Muster-Zuschlag",paying+" × "+nights+" Nächte × "+money(2900),paying*stayRate);
- add("Gruppengröße – Muster-Rabatt",paying+" × "+money(groupDiscount),paying*groupDiscount);
+ add("Reisepaket",paying+" zahlende Personen × "+days+" Tage × "+money(sampleDailyRate[offer.category]),paying*days*sampleDailyRate[offer.category]);
+ add("Reisezeitraum",paying+" × "+money(seasonRate),paying*seasonRate);
+ add("Abfahrtsregion",paying+" × "+money(regionRate),paying*regionRate);
+ add("Anreise",paying+" × "+money(transportRate),paying*transportRate);
+ add("Unterkunft",paying+" × "+nights+" Nächte × "+money(2900),paying*stayRate);
+ add("Gruppenrabatt",paying+" × "+money(groupDiscount),paying*groupDiscount);
  for(const p of chosen){
   const rate=1200+(Number(p.uid.replace(/\D/g,""))%6)*600;
-  add(p.name+" – Musterprogramm",group+" Teilnehmende × "+money(rate),group*rate);
+  add(p.name+" (Beispielpreis)",group+" Teilnehmende × "+money(rate),group*rate);
  }
  const total=components.reduce((sum,x)=>sum+x.amount,0);
  if(!Number.isSafeInteger(total)||total<=0)return {status:"invalid",reason:"Die Musterkalkulation ist nicht möglich."};
