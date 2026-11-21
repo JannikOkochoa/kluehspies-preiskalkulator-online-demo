@@ -3513,7 +3513,7 @@
     },
     {
       "id": "public-duemmer-see-5-tage-aktivprogramm-am-dummer-see",
-      "destination": "Duemmer See",
+      "destination": "Dümmer See",
       "title": "5 Tage Aktivprogramm am Dümmer See",
       "days": 5,
       "priceFromCents": 28900,
@@ -3530,7 +3530,7 @@
     },
     {
       "id": "public-duemmer-see-5-tage-surfkurs-am-dummer-see",
-      "destination": "Duemmer See",
+      "destination": "Dümmer See",
       "title": "5 Tage Surfkurs am Dümmer See",
       "days": 5,
       "priceFromCents": 30500,
@@ -3564,7 +3564,7 @@
     },
     {
       "id": "public-edertal-wellen-5-tage-edertal-wellen",
-      "destination": "Edertal Wellen",
+      "destination": "Edertal-Wellen",
       "title": "5 Tage Edertal/Wellen",
       "days": 5,
       "priceFromCents": 20500,
@@ -3666,7 +3666,7 @@
     },
     {
       "id": "public-garmisch-partenkirchen-5-tage-garmisch-partenkirchen",
-      "destination": "Garmisch Partenkirchen",
+      "destination": "Garmisch-Partenkirchen",
       "title": "5 Tage Garmisch-Partenkirchen",
       "days": 5,
       "priceFromCents": 30700,
@@ -3734,7 +3734,7 @@
     },
     {
       "id": "public-groemitz-5-tage-gromitz",
-      "destination": "Groemitz",
+      "destination": "Grömitz",
       "title": "5 Tage Grömitz",
       "days": 5,
       "priceFromCents": 22100,
@@ -3955,7 +3955,7 @@
     },
     {
       "id": "public-limburg-an-der-lahn-5-tage-limburg",
-      "destination": "Limburg An Der Lahn",
+      "destination": "Limburg an der Lahn",
       "title": "5 Tage Limburg",
       "days": 5,
       "priceFromCents": 30800,
@@ -4006,7 +4006,7 @@
     },
     {
       "id": "public-nationalpark-mueritz-5-tage-muritz-nationalpark",
-      "destination": "Nationalpark Mueritz",
+      "destination": "Nationalpark Müritz",
       "title": "5 Tage Müritz Nationalpark",
       "days": 5,
       "priceFromCents": 25800,
@@ -4125,7 +4125,7 @@
     },
     {
       "id": "public-pruem-5-tage-prum",
-      "destination": "Pruem",
+      "destination": "Prüm",
       "title": "5 Tage Prüm",
       "days": 5,
       "priceFromCents": 23600,
@@ -4210,7 +4210,7 @@
     },
     {
       "id": "public-rieste-am-alfsee-5-tage-alfsee-apartmenthauser",
-      "destination": "Rieste Am Alfsee",
+      "destination": "Rieste am Alfsee",
       "title": "5 Tage Alfsee Apartmenthäuser",
       "days": 5,
       "priceFromCents": 28700,
@@ -4248,7 +4248,7 @@
     },
     {
       "id": "public-rieste-am-alfsee-5-tage-alfsee-beachcamp",
-      "destination": "Rieste Am Alfsee",
+      "destination": "Rieste am Alfsee",
       "title": "5 Tage Alfsee Beachcamp",
       "days": 5,
       "priceFromCents": 24600,
@@ -4286,7 +4286,7 @@
     },
     {
       "id": "public-rieste-am-alfsee-5-tage-alfsee-germanenland",
-      "destination": "Rieste Am Alfsee",
+      "destination": "Rieste am Alfsee",
       "title": "5 Tage Alfsee Germanenland",
       "days": 5,
       "priceFromCents": 31200,
@@ -4341,7 +4341,7 @@
     },
     {
       "id": "public-saechsische-schweiz-5-tage-sachsische-schweiz",
-      "destination": "Saechsische Schweiz",
+      "destination": "Sächsische Schweiz",
       "title": "5 Tage Sächsische Schweiz",
       "days": 5,
       "priceFromCents": 32900,
@@ -4460,7 +4460,7 @@
     },
     {
       "id": "public-schleiden-gemuend-5-tage-schleiden-gemund",
-      "destination": "Schleiden Gemuend",
+      "destination": "Schleiden-Gemünd",
       "title": "5 Tage Schleiden/Gemünd",
       "days": 5,
       "priceFromCents": 27200,
@@ -4584,7 +4584,7 @@
     },
     {
       "id": "public-st-andreasberg-5-tage-st-andreasberg-im-harz",
-      "destination": "St Andreasberg",
+      "destination": "St. Andreasberg",
       "title": "5 Tage St. Andreasberg im Harz",
       "days": 5,
       "priceFromCents": 22900,
@@ -4601,7 +4601,7 @@
     },
     {
       "id": "public-st-johann-im-pongau-5-tage-st-johann-im-pongau",
-      "destination": "St Johann Im Pongau",
+      "destination": "St. Johann im Pongau",
       "title": "5 Tage St. Johann im Pongau",
       "days": 5,
       "priceFromCents": 28900,
@@ -4618,7 +4618,7 @@
     },
     {
       "id": "public-st-peter-ording-5-tage-st-peter-ording",
-      "destination": "St Peter Ording",
+      "destination": "St. Peter-Ording",
       "title": "5 Tage St. Peter Ording",
       "days": 5,
       "priceFromCents": 24600,
@@ -4776,7 +4776,7 @@
     },
     {
       "id": "public-weissenhaeuser-strand-5-tage-fruhlingsspa-am-weissenhauser-strand",
-      "destination": "Weissenhaeuser Strand",
+      "destination": "Weißenhäuser Strand",
       "title": "5 Tage Frühlingsspaß am Weissenhäuser Strand",
       "days": 5,
       "priceFromCents": 18500,
@@ -4793,7 +4793,7 @@
     },
     {
       "id": "public-weissenhaeuser-strand-5-tage-ostseespa-am-weissenhauser-strand",
-      "destination": "Weissenhaeuser Strand",
+      "destination": "Weißenhäuser Strand",
       "title": "5 Tage Ostseespaß am Weissenhäuser Strand",
       "days": 5,
       "priceFromCents": 21700,
@@ -4810,7 +4810,7 @@
     },
     {
       "id": "public-weissenhaeuser-strand-5-tage-sommerspa-am-weissenhauser-strand",
-      "destination": "Weissenhaeuser Strand",
+      "destination": "Weißenhäuser Strand",
       "title": "5 Tage Sommerspaß am Weissenhäuser Strand",
       "days": 5,
       "priceFromCents": 27300,
@@ -4895,7 +4895,7 @@
     },
     {
       "id": "public-winterberg-zueschen-5-tage-winterberg-zuschen",
-      "destination": "Winterberg Zueschen",
+      "destination": "Winterberg-Züschen",
       "title": "5 Tage Winterberg - Züschen",
       "days": 5,
       "priceFromCents": 26300,
@@ -4912,7 +4912,7 @@
     },
     {
       "id": "public-woffelsbach-am-rursee-5-tage-rursee-challenge",
-      "destination": "Woffelsbach Am Rursee",
+      "destination": "Woffelsbach am Rursee",
       "title": "5 Tage Rursee-Challenge",
       "days": 5,
       "priceFromCents": 26700,
@@ -5065,7 +5065,7 @@
     },
     {
       "id": "public-hochzeiger-im-pitztal-5-tage-hochzeiger-im-pitztal",
-      "destination": "Hochzeiger Im Pitztal",
+      "destination": "Hochzeiger im Pitztal",
       "title": "5 Tage Hochzeiger im Pitztal",
       "days": 5,
       "priceFromCents": 24300,
@@ -5082,7 +5082,7 @@
     },
     {
       "id": "public-hochzeiger-im-pitztal-6-tage-hochzeiger-im-pitztal",
-      "destination": "Hochzeiger Im Pitztal",
+      "destination": "Hochzeiger im Pitztal",
       "title": "6 Tage Hochzeiger im Pitztal",
       "days": 6,
       "priceFromCents": 29900,
@@ -5099,7 +5099,7 @@
     },
     {
       "id": "public-hochzeiger-im-pitztal-7-tage-hochzeiger-im-pitztal",
-      "destination": "Hochzeiger Im Pitztal",
+      "destination": "Hochzeiger im Pitztal",
       "title": "7 Tage Hochzeiger im Pitztal",
       "days": 7,
       "priceFromCents": 35500,
@@ -5116,7 +5116,7 @@
     },
     {
       "id": "public-hochzillertal-hochfuegen-6-tage-hochzillertal",
-      "destination": "Hochzillertal Hochfuegen",
+      "destination": "Hochzillertal-Hochfügen",
       "title": "6 Tage Hochzillertal",
       "days": 6,
       "priceFromCents": 31900,
@@ -5133,7 +5133,7 @@
     },
     {
       "id": "public-hochzillertal-hochfuegen-7-tage-hochzillertal",
-      "destination": "Hochzillertal Hochfuegen",
+      "destination": "Hochzillertal-Hochfügen",
       "title": "7 Tage Hochzillertal",
       "days": 7,
       "priceFromCents": 37900,
@@ -5150,7 +5150,7 @@
     },
     {
       "id": "public-hochzillertal-hochfuegen-7-5-tage-hochzillertal",
-      "destination": "Hochzillertal Hochfuegen",
+      "destination": "Hochzillertal-Hochfügen",
       "title": "7,5 Tage Hochzillertal",
       "days": 8,
       "priceFromCents": 44500,
@@ -5167,7 +5167,7 @@
     },
     {
       "id": "public-hochzillertal-hochfuegen-8-5-tage-hochzillertal",
-      "destination": "Hochzillertal Hochfuegen",
+      "destination": "Hochzillertal-Hochfügen",
       "title": "8,5 Tage Hochzillertal",
       "days": 9,
       "priceFromCents": 47900,
@@ -5184,7 +5184,7 @@
     },
     {
       "id": "public-hoernerbahnen-bolsterlang-5-tage-hornerbahnen",
-      "destination": "Hoernerbahnen Bolsterlang",
+      "destination": "Hörnerbahnen Bolsterlang",
       "title": "5 Tage Hörnerbahnen",
       "days": 5,
       "priceFromCents": 31900,
@@ -5201,7 +5201,7 @@
     },
     {
       "id": "public-hoernerbahnen-bolsterlang-6-tage-hornerbahnen",
-      "destination": "Hoernerbahnen Bolsterlang",
+      "destination": "Hörnerbahnen Bolsterlang",
       "title": "6 Tage Hörnerbahnen",
       "days": 6,
       "priceFromCents": 38500,
@@ -5337,7 +5337,7 @@
     },
     {
       "id": "public-katschberg-aineck-5-tage-katschberg-aineck",
-      "destination": "Katschberg Aineck",
+      "destination": "Katschberg-Aineck",
       "title": "5 Tage Katschberg-Aineck",
       "days": 5,
       "priceFromCents": 29900,
@@ -5354,7 +5354,7 @@
     },
     {
       "id": "public-katschberg-aineck-6-tage-katschberg-aineck",
-      "destination": "Katschberg Aineck",
+      "destination": "Katschberg-Aineck",
       "title": "6 Tage Katschberg-Aineck",
       "days": 6,
       "priceFromCents": 33500,
@@ -5371,7 +5371,7 @@
     },
     {
       "id": "public-katschberg-aineck-7-tage-katschberg-aineck",
-      "destination": "Katschberg Aineck",
+      "destination": "Katschberg-Aineck",
       "title": "7 Tage Katschberg-Aineck",
       "days": 7,
       "priceFromCents": 40500,
@@ -5388,7 +5388,7 @@
     },
     {
       "id": "public-kuehtai-hochoetz-6-tage-kuhtai-hochoetz",
-      "destination": "Kuehtai Hochoetz",
+      "destination": "Kühtai-Hochoetz",
       "title": "6 Tage Kühtai Hochoetz",
       "days": 6,
       "priceFromCents": 47500,
@@ -5439,7 +5439,7 @@
     },
     {
       "id": "public-moelltaler-gletscher-6-tage-molltaler-gletscher-sparpreis",
-      "destination": "Moelltaler Gletscher",
+      "destination": "Mölltaler Gletscher",
       "title": "6 Tage Mölltaler Gletscher Sparpreis",
       "days": 6,
       "priceFromCents": 25500,
@@ -5456,7 +5456,7 @@
     },
     {
       "id": "public-moelltaler-gletscher-7-5-tage-molltaler-gletscher",
-      "destination": "Moelltaler Gletscher",
+      "destination": "Mölltaler Gletscher",
       "title": "7,5 Tage Mölltaler Gletscher",
       "days": 8,
       "priceFromCents": 42500,
@@ -5575,7 +5575,7 @@
     },
     {
       "id": "public-simonhoehe-5-tage-simonhohe",
-      "destination": "Simonhoehe",
+      "destination": "Simonhöhe",
       "title": "5 Tage Simonhöhe",
       "days": 5,
       "priceFromCents": 25900,
@@ -5592,7 +5592,7 @@
     },
     {
       "id": "public-simonhoehe-6-tage-simonhohe",
-      "destination": "Simonhoehe",
+      "destination": "Simonhöhe",
       "title": "6 Tage Simonhöhe",
       "days": 6,
       "priceFromCents": 31900,
@@ -5609,7 +5609,7 @@
     },
     {
       "id": "public-skisafari-kaernten-5-tage-skisafari",
-      "destination": "Skisafari Kaernten",
+      "destination": "Skisafari Kärnten",
       "title": "5 Tage Skisafari",
       "days": 5,
       "priceFromCents": 28900,
@@ -5626,7 +5626,7 @@
     },
     {
       "id": "public-skisafari-kaernten-6-tage-skisafari",
-      "destination": "Skisafari Kaernten",
+      "destination": "Skisafari Kärnten",
       "title": "6 Tage Skisafari",
       "days": 6,
       "priceFromCents": 35900,
@@ -5677,7 +5677,7 @@
     },
     {
       "id": "public-spittal-goldeck-6-tage-spittal-goldeck",
-      "destination": "Spittal Goldeck",
+      "destination": "Spittal / Goldeck",
       "title": "6 Tage Spittal / Goldeck",
       "days": 6,
       "priceFromCents": 34900,
@@ -5694,7 +5694,7 @@
     },
     {
       "id": "public-spittal-goldeck-7-tage-spittal-goldeck",
-      "destination": "Spittal Goldeck",
+      "destination": "Spittal / Goldeck",
       "title": "7 Tage Spittal / Goldeck",
       "days": 7,
       "priceFromCents": 41500,
@@ -5711,7 +5711,7 @@
     },
     {
       "id": "public-spittal-goldeck-7-5-tage-spittal-goldeck",
-      "destination": "Spittal Goldeck",
+      "destination": "Spittal / Goldeck",
       "title": "7,5 Tage Spittal / Goldeck",
       "days": 8,
       "priceFromCents": 42900,
@@ -5728,7 +5728,7 @@
     },
     {
       "id": "public-spittal-goldeck-8-5-tage-spittal-goldeck",
-      "destination": "Spittal Goldeck",
+      "destination": "Spittal / Goldeck",
       "title": "8,5 Tage Spittal / Goldeck",
       "days": 9,
       "priceFromCents": 43900,
@@ -5745,7 +5745,7 @@
     },
     {
       "id": "public-st-jakob-7-5-tage-st-jakob-i-d",
-      "destination": "St Jakob",
+      "destination": "St. Jakob",
       "title": "7,5 Tage St. Jakob i.D.",
       "days": 8,
       "priceFromCents": 40500,
@@ -5762,7 +5762,7 @@
     },
     {
       "id": "public-st-jakob-8-5-tage-st-jakob-i-d",
-      "destination": "St Jakob",
+      "destination": "St. Jakob",
       "title": "8,5 Tage St. Jakob i.D.",
       "days": 9,
       "priceFromCents": 43900,
@@ -5847,7 +5847,7 @@
     },
     {
       "id": "public-warth-schroecken-5-tage-warth-schrocken",
-      "destination": "Warth Schroecken",
+      "destination": "Warth-Schröcken",
       "title": "5 Tage Warth-Schröcken",
       "days": 5,
       "priceFromCents": 31900,
@@ -5864,7 +5864,7 @@
     },
     {
       "id": "public-warth-schroecken-6-tage-warth-schrocken",
-      "destination": "Warth Schroecken",
+      "destination": "Warth-Schröcken",
       "title": "6 Tage Warth-Schröcken",
       "days": 6,
       "priceFromCents": 38900,
@@ -5881,7 +5881,7 @@
     },
     {
       "id": "public-winklmoosalm-steinplatte-5-tage-winklmoosalm",
-      "destination": "Winklmoosalm Steinplatte",
+      "destination": "Winklmoosalm-Steinplatte",
       "title": "5 Tage Winklmoosalm",
       "days": 5,
       "priceFromCents": 27500,
@@ -5898,7 +5898,7 @@
     },
     {
       "id": "public-winklmoosalm-steinplatte-6-tage-winklmoosalm",
-      "destination": "Winklmoosalm Steinplatte",
+      "destination": "Winklmoosalm-Steinplatte",
       "title": "6 Tage Winklmoosalm",
       "days": 6,
       "priceFromCents": 32500,
@@ -6469,7 +6469,7 @@
     },
     {
       "id": "public-adriakueste-5-5-tage-adriakuste",
-      "destination": "Adriakueste",
+      "destination": "Adriaküste",
       "title": "5,5 Tage Adriaküste",
       "days": 6,
       "priceFromCents": 37900,
@@ -8513,7 +8513,7 @@
     },
     {
       "id": "public-bruessel-5-tage-brussel",
-      "destination": "Bruessel",
+      "destination": "Brüssel",
       "title": "5 Tage Brüssel",
       "days": 5,
       "priceFromCents": 28500,
@@ -8723,7 +8723,7 @@
     },
     {
       "id": "public-bruessel-5-tage-brussel-sparpreis",
-      "destination": "Bruessel",
+      "destination": "Brüssel",
       "title": "5 Tage Brüssel Sparpreis",
       "days": 5,
       "priceFromCents": 23000,
@@ -10309,7 +10309,7 @@
     },
     {
       "id": "public-duesseldorf-5-tage-dusseldorf",
-      "destination": "Duesseldorf",
+      "destination": "Düsseldorf",
       "title": "5 Tage Düsseldorf",
       "days": 5,
       "priceFromCents": 25500,
@@ -10575,7 +10575,7 @@
     },
     {
       "id": "public-duesseldorf-5-tage-dusseldorf-sparpreis",
-      "destination": "Duesseldorf",
+      "destination": "Düsseldorf",
       "title": "5 Tage Düsseldorf Sparpreis",
       "days": 5,
       "priceFromCents": 19000,

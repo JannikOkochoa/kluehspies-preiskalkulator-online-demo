@@ -29,3 +29,24 @@
 
 /* Public, read-only demo: no tariff management */
 #adminOpen,#adminModal {display:none!important}
+
+
+/* Navigation and clear category choices */
+.primary-nav button.nav-link{border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;color:inherit;white-space:nowrap}
+.primary-nav button.nav-link.selected{color:var(--blue);border-bottom-color:var(--blue)}
+.primary-nav button.nav-link:hover{color:var(--blue)}
+.category-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 18px}
+.category-tab{border:1px solid #dbe4e8;border-radius:9px;padding:12px 8px;background:#fff;color:#47555b;font-size:13px;font-weight:700}
+.category-tab.is-selected{color:#0066a5;background:#f0f8fc;border-color:#0576BD}
+.category-tab:hover{border-color:#0576BD}
+.destination-label{margin-top:4px}
+@media(max-width:540px){.category-tabs{gap:5px}.category-tab{font-size:11px;padding:11px 3px}}
+
+/* Auch auf kleinen Geräten sollen Quellenhinweise sichtbar sein. */
+@media(max-width:800px){.source-card{display:flex}}
+
+/* Better contrast for explanatory and source text */
+.field-helper,.option-caption,.price-unit,.quote-updated,.source-card p,.trust-rail small,
+.line-option small,.muted-intro,.empty-programs,.intro p,.program-caption,.zip-help,
+.quote-foot,.footer span,.quote-content .price-prelude{color:#58656d}
+.quote-foot{font-size:11px}
