@@ -8,11 +8,11 @@ const priceVariants=p=>(offer()?.programs||[]).filter(x=>normalizedName(x)===nor
 const programLabel=p=>{const same=priceVariants(p);return same.length>1?p.name+" · Preisvariante "+(same.findIndex(x=>x.uid===p.uid)+1)+" von "+same.length:p.name;};
 let expandedPrograms=false;
 const selectedProgramDetails=()=>offer()?.programs?.filter(x=>state.programIds.includes(x.uid))||[];
-const stays=[{id:"included",name:"Unterkunft im Reisepaket",info:"Gemäß offiziell beschriebenem Reisepaket"},{id:"alternative",name:"Wunschunterkunft anfragen",info:"Nur mit hinterlegten Unterkunftskonditionen"}];
-const rides=[{id:"bus",name:"Reisebus",sub:"Je nach Paket",icon:"▰"},{id:"rail",name:"Bahnanreise",sub:"Tarif erforderlich",icon:"⇆"},{id:"self",name:"Selbstanreise",sub:"Eigenorganisation",icon:"➤"}];
-const defaults={offerId:"berlin-5",students:28,adults:2,from:"2027-05-17",postal:"28195",transport:"bus",accommodation:"included",programIds:[]};
+const stays=[{id:"included",name:"Unterkunft laut Angebot",info:"Leistungsumfang im Originalangebot prüfen"},{id:"alternative",name:"Wunschunterkunft anfragen",info:"Nur mit hinterlegten Unterkunftskonditionen"}];
+const rides=[{id:"package",name:"Laut Angebot",sub:"Originalleistung",icon:"▰"},{id:"bus",name:"Reisebus",sub:"Nur falls enthalten",icon:"▰"},{id:"rail",name:"Bahnanreise",sub:"Tarif erforderlich",icon:"⇆"},{id:"self",name:"Selbstanreise",sub:"Eigenorganisation",icon:"➤"}];
+const defaults={offerId:"berlin-5",students:28,adults:2,from:"2027-05-17",postal:"28195",transport:"package",accommodation:"included",programIds:[]};
 let state={...defaults};
-try{const st=JSON.parse(localStorage.getItem("kluehspies-user-draft-v1")||"null");if(st&&typeof st==="object")state={...state,...st}}catch{}
+try{const st=JSON.parse(localStorage.getItem("kluehspies-user-draft-v2")||"null");if(st&&typeof st==="object")state={...state,...st}}catch{}
 if(!Array.isArray(state.programIds))state.programIds=[];
 const safe=s=>String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]));
 const longDate=s=>{if(!s)return "–";let [y,m,d]=s.split("-");return d+"."+m+"."+y};
@@ -52,10 +52,10 @@ function renderOffers(){
  $("destination").value=current.destination;
  $("offerCards").innerHTML=offers.filter(o=>o.destination===current.destination&&o.category===activeCategory).map(o=>'<button class="offer-option '+(state.offerId===o.id?"is-selected":"")+'" type="button" data-offer="'+o.id+'" aria-pressed="'+(state.offerId===o.id)+'"><span class="radio-tick"></span><span class="option-eyebrow">'+safe(o.category)+' · '+o.days+' Tage</span><strong>'+safe(o.title)+'</strong><span class="option-price">ab '+euro(o.priceFromCents)+' <small>p. P.</small></span><span class="option-caption">'+(o.seasonUnknown?"Saison / Termin nicht bestätigt":o.months?.length?"Saisongebunden":"Veröffentlichter Ab-Preis")+'</span></button>').join("");
 }
-function saveDraft(){try{localStorage.setItem("kluehspies-user-draft-v1",JSON.stringify(state))}catch{}}
+function saveDraft(){try{localStorage.setItem("kluehspies-user-draft-v2",JSON.stringify(state))}catch{}}
 function showQuote(){
  const o=offer();if(!o)return;
- const r=calculate(state,tariffs,offers),season=monthAllowed(o),yearUnverified=Number(state.from.slice(0,4))!==PROGRAM_YEAR,exact=r.status==="exact",canUsePublic=season&&state.transport==="bus"&&state.accommodation==="included";
+ const r=calculate(state,tariffs,offers),season=monthAllowed(o),yearUnverified=Number(state.from.slice(0,4))!==PROGRAM_YEAR,exact=r.status==="exact",transportMatched=state.transport==="package"||(state.transport==="bus"&&/\bBus\b/i.test(o.inclusive||"")),canUsePublic=season&&transportMatched&&state.accommodation==="included";
  let end=r.to;
  if(!end&&/^\d{4}-\d\d-\d\d$/.test(state.from)){const d=new Date(state.from+"T12:00:00Z");if(!isNaN(d))end=new Date(d.getTime()+(o.days-1)*86400000).toISOString().slice(0,10)}
  $("returnDate").value=longDate(end);

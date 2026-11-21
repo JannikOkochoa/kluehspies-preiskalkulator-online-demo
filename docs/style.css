@@ -50,3 +50,6 @@
 .line-option small,.muted-intro,.empty-programs,.intro p,.program-caption,.zip-help,
 .quote-foot,.footer span,.quote-content .price-prelude{color:#58656d}
 .quote-foot{font-size:11px}
+
+/* Four travel options, readable on all screen sizes. */
+.transport-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
