@@ -1,5 +1,5 @@
-import {calculate,euro} from "./pricing.mjs";
-import {simulateIndividualPrice} from "./demo-pricing.mjs";
+import {calculate,euro} from "./pricing.mjs?v=20261121-kluehspies-2";
+import {simulateIndividualPrice} from "./demo-pricing.mjs?v=20261121-kluehspies-2";
 const $=id=>document.getElementById(id);
 let offers=[],tariffs=[],checkedAt="",toastTimeout;
 let demoMode=new URLSearchParams(window.location.search).get("demo")==="1";
