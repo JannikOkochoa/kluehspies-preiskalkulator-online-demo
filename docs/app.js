@@ -1,0 +1,143 @@
+import {calculate,euro} from "./pricing.mjs";
+const $=id=>document.getElementById(id);
+let offers=[],tariffs=[],checkedAt="",toastTimeout;
+const fallbackPrograms=[];
+let expandedPrograms=false;
+const selectedProgramDetails=()=>offer()?.programs?.filter(x=>state.programIds.includes(x.uid))||[];
+const stays=[{id:"included",name:"Unterkunft im Reisepaket",info:"Gemäß offiziell beschriebenem Reisepaket"},{id:"alternative",name:"Wunschunterkunft anfragen",info:"Nur mit hinterlegten Unterkunftskonditionen"}];
+const rides=[{id:"bus",name:"Reisebus",sub:"Je nach Paket",icon:"▰"},{id:"rail",name:"Bahnanreise",sub:"Tarif erforderlich",icon:"⇆"},{id:"self",name:"Selbstanreise",sub:"Eigenorganisation",icon:"➤"}];
+const defaults={offerId:"berlin-5",students:28,adults:2,from:"2027-05-17",postal:"28195",transport:"bus",accommodation:"included",programIds:[]};
+let state={...defaults};
+try{const st=JSON.parse(localStorage.getItem("kluehspies-user-draft-v1")||"null");if(st&&typeof st==="object")state={...state,...st}}catch{}
+if(!Array.isArray(state.programIds))state.programIds=[];
+const safe=s=>String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]));
+const longDate=s=>{if(!s)return "–";let [y,m,d]=s.split("-");return d+"."+m+"."+y};
+const shortDate=s=>{if(!s)return "–";let [y,m,d]=s.split("-");return d+"."+m+"."};
+const monthAllowed=o=>{
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(state.from))return false;
+ const date=new Date(state.from+"T12:00:00Z");if(isNaN(date))return false;
+ for(let i=0;i<o.days;i++){const d=new Date(date.getTime()+i*86400000);if(d.getUTCFullYear()!==2027||(o.months?.length&&!o.months.includes(d.getUTCMonth()+1)))return false}
+ return true;
+};
+const offer=()=>offers.find(o=>o.id===state.offerId)||offers[0];
+function tell(msg){const t=$("toast");t.textContent=msg;t.classList.add("visible");clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove("visible"),3200)}
+function updateFields(){for(const k of ["students","adults","postal"])$(k).value=state[k];$("departure").value=state.from}
+function itemButton(o,k){const selected=state[k]===o.id;return '<button class="line-option '+(selected?"is-selected":"")+'" type="button" data-kind="'+k+'" data-value="'+o.id+'" aria-pressed="'+selected+'"><span class="radio-tick"></span><span><strong>'+safe(o.name)+'</strong><small>'+safe(o.info)+'</small></span>'+(o.tag?'<span class="line-right">'+o.tag+'</span>':"")+'</button>'}
+function renderOptions(){
+ const entries=offer()?.programs||[];
+ const eligible=entries.filter(x=>x&&x.uid&&x.name);
+ const shown=expandedPrograms?eligible:eligible.slice(0,7);
+ $("programCards").innerHTML='<div class="program-caption">ⓘ Programmbausteine laut offizieller Klühspies-Seite · individuell wählbar</div>'+
+ (eligible.length?shown.map(x=>{
+   const isSelected=state.programIds.includes(x.uid);
+   const publicHint=Number.isSafeInteger(x.publicPriceFromCents)&&x.publicPriceFromCents>0?'Offizieller Programm-Ab-Preis '+euro(x.publicPriceFromCents)+' / Person · nicht im Reisepreis eingerechnet':'Preis auf Anfrage / nicht einzeln verifiziert';
+   return '<button class="line-option '+(isSelected?'is-selected':'')+'" type="button" data-program-id="'+safe(x.uid)+'" aria-pressed="'+isSelected+'"><span class="check-box">'+(isSelected?'✓':'')+'</span><span><strong>'+safe(x.name)+'</strong><small>'+safe(publicHint)+'</small></span></button>';
+ }).join(''):'<p class="empty-programs">Für dieses Reiseziel konnten noch keine optionalen Klühspies-Programmbausteine aus der öffentlichen Seite geladen werden.</p>')+
+ (eligible.length>7?'<button id="morePrograms" type="button" class="more-programs">'+(expandedPrograms?'Weniger anzeigen':'Alle '+eligible.length+' Programmbausteine anzeigen')+' <span>↓</span></button>':'');
+
+ $("accommodationCards").innerHTML=stays.map(o=>itemButton(o,"accommodation")).join("");
+ $("transportCards").innerHTML=rides.map(o=>'<button type="button" class="transport-option '+(state.transport===o.id?"is-selected":"")+'" data-kind="transport" data-value="'+o.id+'" aria-pressed="'+(state.transport===o.id)+'"><span class="transport-icon">'+o.icon+'</span><span class="radio-tick"></span><strong>'+safe(o.name)+'</strong><small>'+safe(o.sub)+'</small></button>').join("");
+}
+function renderOffers(){
+ const destinations=[...new Set(offers.map(o=>o.destination))];
+ $("destination").innerHTML=destinations.map(d=>'<option value="'+safe(d)+'">'+safe(d)+'</option>').join("");
+ const current=offer();if(!current)return;
+ $("destination").value=current.destination;
+ $("offerCards").innerHTML=offers.filter(o=>o.destination===current.destination).map(o=>'<button class="offer-option '+(state.offerId===o.id?"is-selected":"")+'" type="button" data-offer="'+o.id+'" aria-pressed="'+(state.offerId===o.id)+'"><span class="radio-tick"></span><span class="option-eyebrow">'+safe(o.category)+' · '+o.days+' Tage</span><strong>'+safe(o.title)+'</strong><span class="option-price">ab '+euro(o.priceFromCents)+' <small>p. P.</small></span><span class="option-caption">'+(o.seasonUnknown?"Saison / Termin nicht bestätigt":o.months?.length?"Saisongebunden":"Veröffentlichter Ab-Preis")+'</span></button>').join("");
+}
+function saveDraft(){try{localStorage.setItem("kluehspies-user-draft-v1",JSON.stringify(state))}catch{}}
+function showQuote(){
+ const o=offer();if(!o)return;
+ const r=calculate(state,tariffs,offers),season=monthAllowed(o),exact=r.status==="exact",canUsePublic=season&&state.transport==="bus"&&state.accommodation==="included";
+ let end=r.to;
+ if(!end&&/^\d{4}-\d\d-\d\d$/.test(state.from)){const d=new Date(state.from+"T12:00:00Z");if(!isNaN(d))end=new Date(d.getTime()+(o.days-1)*86400000).toISOString().slice(0,10)}
+ $("returnDate").value=longDate(end);
+ $("quoteCity").textContent=o.destination.toUpperCase();
+ const picture=$("quote").querySelector(".quote-photo img");
+ picture.onerror=()=>{picture.onerror=null;picture.src="./assets/"+(o.image||"berlin-panorama.jpg")};
+ picture.src=o.imageUrl||"./assets/"+o.image;
+ picture.alt="Klassenfahrt "+o.destination;
+ $("summaryPackage").textContent=o.title;
+ $("summaryDates").textContent=shortDate(state.from)+" – "+longDate(end);
+ $("summaryPeople").textContent=(Number(state.students)+Number(state.adults))+" Personen";
+ $("summaryProgram").textContent=state.programIds.length?(state.programIds.length+" Zusatzbaustein"+(state.programIds.length!==1?"e":"")):"Ohne Zusatzbaustein";
+ $("summaryStay").textContent=stays.find(x=>x.id===state.accommodation)?.name||"–";
+ $("summaryTransport").textContent=rides.find(x=>x.id===state.transport)?.name||"–";
+ $("quoteState").textContent=exact?"TARIFBASIERTE BERECHNUNG":canUsePublic?"ÖFFENTLICHER AB-PREIS":"PREIS NICHT BERECHENBAR";
+ $("quoteState").classList.toggle("is-exact",exact);
+ $("quoteUpdated").textContent=exact?"Tarif "+longDate(r.tariff.verifiedAt):"Quelle "+longDate((o.checkedAt||checkedAt||"2026-10-20").slice(0,10));
+ $("pricePrelude").textContent=exact?"Individuell berechneter Reisepreis":canUsePublic?(o.seasonUnknown?"Ab-Preis – nicht für gewähltes Datum bestätigt":"Veröffentlichter Einstiegspreis"):"Kein geprüfter Preis für diese Auswahl";
+ $("priceFrom").textContent=exact?"":canUsePublic?"ab":"";
+ $("mainPrice").textContent=exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–";
+ $("priceUnit").textContent=exact?"pro zahlender Person · Verfügbarkeit ungeprüft":canUsePublic?(state.programIds.length?"pro Person · ohne Zusatzprogramme · unverbindlich":o.seasonUnknown?"pro Person · Saison und Termin nicht bestätigt":"pro Person · nicht verbindlich"):"Nur mit freigegebenem Tarif";
+ $("sourceLink").href=o.source;
+ const selectedPublic=selectedProgramDetails();
+ $("publicProgramBreakdown").hidden=exact||!selectedPublic.length;
+ if(!exact&&selectedPublic.length){
+  const heading='<h4>ÖFFENTLICHE ZUSATZPROGRAMM-AB-PREISE</h4>';
+  const lines=selectedPublic.map(x=>'<div class="program-price-line"><span>'+safe(x.name)+'</span><strong>'+(Number.isSafeInteger(x.publicPriceFromCents)&&x.publicPriceFromCents>0?'ab '+euro(x.publicPriceFromCents)+' p. P.':'Preis offen')+'</strong></div>').join("");
+  $("publicProgramBreakdown").innerHTML=heading+lines+'<p>Diese separat veröffentlichten Mindest-/Einstiegspreise sind <strong>nicht im angezeigten Paket-Ab-Preis enthalten</strong>. Keine geprüfte Summe für Termin, Gruppe oder Verfügbarkeit.</p>';
+ }
+ $("exactBreakdown").hidden=!exact;
+ if(exact){
+  $("exactBreakdown").innerHTML='<p><span>Reisende</span><b>'+r.group+'</b></p><p><span>Vertragliche Freiplätze</span><b>'+r.free+'</b></p><p><span>Zahlende Personen</span><b>'+r.paying+'</b></p><p><span>Grundpaket</span><b>'+euro(r.base)+'</b></p>'+(r.program?'<p><span>Zusatzprogramm</span><b>'+euro(r.program)+'</b></p>':"")+(r.fixed?'<p><span>Fixkosten</span><b>'+euro(r.fixed)+'</b></p>':"")+'<hr><p><span>Gruppenpreis gesamt</span><b>'+euro(r.total)+'</b></p>';
+ }
+ $("statusExplainer").innerHTML=exact?'<strong>Mathematisch aus freigegebenem Tarif kalkuliert.</strong> Grundlage: '+safe(r.tariff.verifiedSource)+'. Noch keine Zusage zur Verfügbarkeit oder Buchbarkeit.':!season?'<strong>Außerhalb der veröffentlichten Angebots-Saison.</strong> Bitte anderen Zeitraum wählen oder passenden Tarif hinterlegen.':!canUsePublic?'<strong>Individuelle Auswahl ohne belegten Preis.</strong> Für diese Anreise bzw. Unterkunft existiert noch kein freigegebener Tarif.':'<strong>Wichtig:</strong> '+safe(r.reason||"Nur veröffentlichter Einstiegspreis verfügbar.")+' Dieser Ab-Preis ist kein individuelles Angebot.'+(o.seasonUnknown?" Eine Gültigkeit für den gewählten Reisezeitraum ist nicht nachgewiesen.":"");
+ $("mobilePrice").textContent=(canUsePublic&&!exact?"ab ":"")+(exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–");
+ $("mobileStatus").textContent=exact?"Tarifpreis pro Person":canUsePublic?"Ab-Preis, unverbindlich":"Kein geprüfter Tarif";
+ saveDraft();window.__lastQuote={r,o};
+}
+function rerender(){renderOffers();renderOptions();showQuote()}
+function openAdmin(){$("jsonTariffs").value=JSON.stringify(tariffs,null,2);$("tariffCount").textContent=tariffs.length+" freigegebene Tarifregeln";$("adminFeedback").textContent="";$("adminModal").hidden=false;document.body.style.overflow="hidden"}
+function closeAdmin(){$("adminModal").hidden=true;document.body.style.overflow=""}
+function download(name,content){const blob=new Blob([content],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function saveTariffs(){
+ $("adminFeedback").textContent="Prüfe Tarifdaten …";
+ try{const list=JSON.parse($("jsonTariffs").value),res=await fetch("/api/tariffs",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({tariffs:list})}),reply=await res.json();if(!res.ok)throw Error(reply.error||"Import fehlgeschlagen");tariffs=list;$("tariffCount").textContent=tariffs.length+" freigegebene Tarifregeln";$("adminFeedback").textContent="Gespeichert: "+tariffs.length+" Tarife. Die Kalkulation wurde neu berechnet.";showQuote();tell("Tarife gespeichert")}catch(e){$("adminFeedback").textContent="Nicht gespeichert: "+e.message}
+}
+async function refresh(){
+ const btn=$("refreshBtn");btn.disabled=true;btn.textContent="Lade veröffentlichte Preisliste …";$("refreshMessage").textContent="";
+ try{
+  const res=await fetch("./data/public-offers.json?ts="+Date.now(),{cache:"no-store"});
+  if(!res.ok)throw Error("Preisliste nicht erreichbar");
+  const p=await res.json();offers=p.offers;tariffs=[];checkedAt=p.verifiedAt;
+  $("refreshMessage").textContent="Neueste veröffentlichte Preisliste geladen. Quelle und Prüfdatum stehen im Angebot; kein sofortiger Live-Abruf.";
+  rerender();tell("Preisliste geladen");
+ }catch(e){$("refreshMessage").textContent="Abruf fehlgeschlagen: "+e.message}
+ finally{btn.disabled=false;btn.textContent="↻ Aktualisierte Preisliste laden"}
+}
+
+function bind(){
+ $("destination").addEventListener("change",e=>{const group=offers.filter(o=>o.destination===e.target.value),s=group.find(monthAllowed)||group[0];if(s){state.offerId=s.id;state.programIds=[];expandedPrograms=false;rerender()}});
+ $("offerCards").addEventListener("click",e=>{const b=e.target.closest("[data-offer]");if(b){state.offerId=b.dataset.offer;state.programIds=[];expandedPrograms=false;rerender()}});
+ for(const id of ["students","adults","postal","departure"])$(id).addEventListener("input",e=>{state[id==="departure"?"from":id]=id==="postal"?e.target.value.replace(/[^\d]/g,"").slice(0,5):id==="departure"?e.target.value:Number(e.target.value);showQuote()});
+ document.addEventListener("click",e=>{
+  const program=e.target.closest("[data-program-id]");
+  if(program){const id=program.dataset.programId;state.programIds=state.programIds.includes(id)?state.programIds.filter(x=>x!==id):[...state.programIds,id];renderOptions();showQuote()}
+  if(e.target.closest("#morePrograms")){expandedPrograms=!expandedPrograms;renderOptions()}
+  const s=e.target.closest("[data-kind]");if(s){state[s.dataset.kind]=s.dataset.value;renderOptions();showQuote()}
+  const b=e.target.closest("[data-counter]");if(b){const k=b.dataset.counter,lo=k==="students"?10:1,hi=k==="students"?999:99;state[k]=Math.min(hi,Math.max(lo,Number(state[k]||0)+Number(b.dataset.delta)));$(k).value=state[k];showQuote()}
+ });
+ $("resetBtn").addEventListener("click",()=>{state={...defaults};updateFields();rerender();tell("Auswahl zurückgesetzt")});
+ $("copyBtn").addEventListener("click",async()=>{
+  const {r,o}=window.__lastQuote,price=r.status==="exact"?euro(r.perPaying)+" pro zahlender Person (Tarifpreis, Verfügbarkeit offen)":euro(o.priceFromCents)+" ab pro Person (unverbindlich)";
+  const content=["Klühspies Klassenfahrt – "+o.title,"Termin: "+longDate(state.from)+" – "+longDate(r.to),"Gruppe: "+state.students+" Schüler:innen, "+state.adults+" Begleitpersonen","Abfahrts-PLZ: "+state.postal,"Programm: "+(selectedProgramDetails().map(x=>x.name).join(", ")||"Ohne Zusatzbaustein"),"Unterkunft: "+stays.find(x=>x.id===state.accommodation)?.name,"Anreise: "+rides.find(x=>x.id===state.transport)?.name,"Preisstatus: "+price,"Quelle: "+o.source,"Hinweis: Keine bestätigte Verfügbarkeit."].join("\n");
+  try{await navigator.clipboard.writeText(content);tell("Reiseplanung kopiert")}catch{tell("Kopieren in diesem Browser nicht möglich")}
+ });
+ $("printBtn").addEventListener("click",()=>window.print());
+ $("mobileDetails").addEventListener("click",()=>$("quote").scrollIntoView({behavior:"smooth",block:"start"}));
+ $("adminOpen").addEventListener("click",openAdmin);$("adminClose").addEventListener("click",closeAdmin);
+ $("adminModal").addEventListener("click",e=>{if(e.target===$("adminModal"))closeAdmin()});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeAdmin()});
+ $("refreshBtn").addEventListener("click",refresh);$("saveTariffs").addEventListener("click",saveTariffs);
+ $("exportBtn").addEventListener("click",()=>download("kluehspies-tarife.json",JSON.stringify(tariffs,null,2)));
+ $("templateBtn").addEventListener("click",()=>{
+  const example=[{id:"KLUEHSPIES-VERTRAG-ID",offerId:offer().id,from:"2027-01-01",to:"2027-12-31",minGroup:20,maxGroup:50,transport:"bus",accommodation:"included",postalPrefixes:["28"],priceCents:0,fixedCents:0,freeEvery:12,programPrices:{},verifiedSource:"ORIGINAL-VERTRAG-BEZEICHNUNG",verifiedAt:"2026-10-20"}];
+  $("jsonTariffs").value=JSON.stringify(example,null,2);$("adminFeedback").textContent="Vorlage geladen. 0 € ist nur ein ungültiger Platzhalter. Vertragspreis und Konditionen ersetzen.";
+ });
+}
+async function init(){
+ try{const res=await fetch("./data/public-offers.json?ts="+Date.now());if(!res.ok)throw Error("Serverfehler");const p=await res.json();offers=p.offers;tariffs=[];checkedAt=p.verifiedAt;if(!offers.some(o=>o.id===state.offerId))state.offerId=offers[0].id;state.programIds=state.programIds.filter(id=>offer().programs?.some(x=>x.uid===id));updateFields();bind();rerender()}
+ catch(e){document.querySelector(".planner-title h2").textContent="Preisdaten konnten nicht geladen werden";console.error(e)}
+}
+init();

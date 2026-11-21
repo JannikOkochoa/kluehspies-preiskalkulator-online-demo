@@ -1,0 +1,34 @@
+name: Refresh official public starting prices
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-kluehspies-public-offers
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify public prices from official Kluehspies pages
+        run: node scripts/refresh.mjs
+      - name: Update published price snapshot only when verified
+        shell: bash
+        run: |
+          if ! git diff --quiet -- docs/data/public-offers.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add docs/data/public-offers.json
+            git commit -m "chore: refresh verified public Kluehspies prices"
+            git push
+          fi
