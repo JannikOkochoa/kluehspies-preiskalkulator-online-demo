@@ -53,3 +53,40 @@
 
 /* Four travel options, readable on all screen sizes. */
 .transport-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+/* Separate, opt-in sample-price simulator. Never style as an official firm quote. */
+.demo-control{background:#fff;border:1px solid #cbdde8;border-radius:13px;padding:18px 20px;margin-bottom:15px;box-shadow:0 3px 12px #2347650b}
+.demo-kicker{display:block;color:#075c91;font-weight:850;font-size:11px;letter-spacing:.075em;line-height:1.35}
+.demo-control p{font-size:13px;line-height:1.45;margin:8px 0 12px;color:#455862}
+.demo-control button{width:100%;border:1.5px solid #0576BD;background:#fff;border-radius:25px;padding:12px 15px;color:#0576BD;font-size:13px;font-weight:850;transition:background .15s}
+.demo-control button:hover,.demo-control button:focus-visible{background:#f0f8fc}
+.demo-control.is-active{background:#f5f9fc;border-color:#0576BD}
+.demo-control.is-active button{background:#0576BD;color:white}
+.demo-hint{display:block;margin-top:10px;font-size:11px;line-height:1.45;color:#5c6971}
+.demo-disclaimer{background:#fff7e1;border:1px solid #f0d796;border-radius:8px;margin-bottom:16px;padding:12px 13px;display:flex;flex-direction:column;gap:6px}
+.demo-disclaimer[hidden],.demo-breakdown[hidden]{display:none}
+.demo-disclaimer strong{color:#72510a;font-size:11px;letter-spacing:.04em;line-height:1.3}
+.demo-disclaimer span{font-size:12px;color:#654e18;line-height:1.45}
+.status-pill.is-demo{color:#73520e;background:#fff1c9;letter-spacing:.01em}
+.quote-rail.is-demo .price-value{color:#0576BD}
+.demo-breakdown{background:#fff;border:1px solid #cbdfe9;border-radius:10px;margin-top:18px;overflow:hidden}
+.demo-breakdown-head{padding:14px;border-bottom:1px solid #dce7ed;background:#f6f9fb;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.demo-breakdown-head strong{font-size:12px;letter-spacing:.03em;color:#304a5a}
+.demo-breakdown-head span{font-size:11px;color:#5c7180}
+.demo-people{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 13px 14px}
+.demo-people span{font-size:11px;color:#53636a}
+.demo-people b{color:#243e4d}
+.demo-line{display:flex;justify-content:space-between;gap:8px;padding:11px 13px;border-top:1px solid #e9eff3}
+.demo-line>div{min-width:0;flex:1}
+.demo-line strong{font-size:12px;line-height:1.35;font-weight:750;display:block;color:#3b4c55}
+.demo-line small{display:block;margin-top:3px;font-size:10px;line-height:1.3;color:#5b6a70}
+.demo-line>b{flex-shrink:0;font-size:12px;font-weight:800;color:#334957;white-space:nowrap}
+.demo-total{display:flex;gap:12px;justify-content:space-between;align-items:baseline;padding:15px 13px;background:#eef6fb;border-top:1px solid #d6e5ed}
+.demo-total span{font-size:12px;font-weight:750;color:#1a4e70}
+.demo-total strong{font-size:19px;font-weight:850;color:#0576BD;white-space:nowrap}
+.demo-average{display:flex;justify-content:space-between;gap:10px;padding:11px 13px}
+.demo-average span{font-size:11px;color:#566b78}
+.demo-average b{font-size:12px;color:#244c61;white-space:nowrap}
+.demo-smallprint{margin:4px 13px 15px;padding:9px;border-left:3px solid #e1b753;background:#fffbf3;color:#665120;font-size:11px;line-height:1.45}
+@media (max-width:800px){.demo-control{margin-bottom:15px}.quote-rail.is-demo{position:static}}
+@media print{.demo-control{display:none!important}.demo-disclaimer,.demo-breakdown{break-inside:avoid}.quote-rail.is-demo{position:static}}

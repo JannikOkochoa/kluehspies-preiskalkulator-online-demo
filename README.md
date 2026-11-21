@@ -29,3 +29,14 @@ Dies ist eine eigenständige, rein lesende Konzept-Demo, kein offizieller Klühs
 - .github/workflows/refresh.yml: geplante Abgleichläufe
 
 Hinweis: Die lokale macOS-Anwendung des ursprünglichen Projekts wird durch dieses Repository nicht geändert.
+
+## Interaktive Musterkalkulation (neu)
+
+Direkt zur aktivierten Musterdemo:
+https://jannikokochoa.github.io/kluehspies-preiskalkulator-online-demo/?demo=1
+
+Die eigenständige, jederzeit abschaltbare Musterkalkulation zeigt, wie sich nach Bereitstellung freigegebener Klühspies-Tarife eine individuelle Gruppenreise berechnen ließe: Datum, Postleitzahl, Teilnehmer, Freiplätze, Gruppenstaffel, Transport, Unterkunft, Zusatzprogramme, pro zahlender Person und Gesamtgruppenpreis.
+
+Alle Rechenraten, Zuschläge, Rabatte, Freiplätze und Programmpreise in diesem Modus sind frei erfunden! Sie stehen ausschließlich in docs/demo-pricing.mjs und sind kein Angebot, kein bestätigter Klühspies-Tarif, keine Verfügbarkeit und keine Buchungs- oder Preiszusage. Die 237 öffentlich geprüften Ab-Preise in docs/data/public-offers.json bleiben davon getrennt und unverändert. Nach dem Ausschalten des Modus zeigt die Seite wieder den öffentlichen Referenzpreisstand.
+
+Automatisierte Prüfung: node tests/demo-pricing.test.mjs.

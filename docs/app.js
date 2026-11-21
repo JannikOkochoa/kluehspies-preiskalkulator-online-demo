@@ -1,6 +1,8 @@
 import {calculate,euro} from "./pricing.mjs";
+import {simulateIndividualPrice} from "./demo-pricing.mjs";
 const $=id=>document.getElementById(id);
 let offers=[],tariffs=[],checkedAt="",toastTimeout;
+let demoMode=new URLSearchParams(window.location.search).get("demo")==="1";
 const PROGRAM_YEAR=2027;
 const categories=["Städte","Aktiv","Ski"];
 const normalizedName=p=>String(p?.name||"").trim().toLocaleLowerCase("de-DE");
@@ -55,13 +57,20 @@ function renderOffers(){
 function saveDraft(){try{localStorage.setItem("kluehspies-user-draft-v2",JSON.stringify(state))}catch{}}
 function showQuote(){
  const o=offer();if(!o)return;
+ const demo=demoMode?simulateIndividualPrice(state,o):null;
+ const demoOk=demo?.status==="simulation";
  const r=calculate(state,tariffs,offers),season=monthAllowed(o),yearUnverified=Number(state.from.slice(0,4))!==PROGRAM_YEAR,exact=r.status==="exact",transportMatched=state.transport==="package"||(state.transport==="bus"&&/\bBus\b/i.test(o.inclusive||"")),canUsePublic=season&&transportMatched&&state.accommodation==="included";
  let end=r.to;
  if(!end&&/^\d{4}-\d\d-\d\d$/.test(state.from)){const d=new Date(state.from+"T12:00:00Z");if(!isNaN(d))end=new Date(d.getTime()+(o.days-1)*86400000).toISOString().slice(0,10)}
  $("returnDate").value=longDate(end);
  $("quoteCity").textContent=o.destination.toUpperCase();
  const picture=$("quote").querySelector(".quote-photo img");
- picture.onerror=()=>{picture.onerror=null;if(o.destination==="Berlin"){picture.src="./assets/berlin-panorama.jpg"}else{picture.style.opacity="0";picture.parentElement.style.background="linear-gradient(130deg,#0576BD,#004F80)"}};picture.style.opacity="1";
+ // Immediately hide the previous offer's photo until the current destination image loads.
+ // Never show a Berlin photo as fallback for another destination.
+ picture.onload=()=>{picture.style.opacity="1";};
+ picture.onerror=()=>{picture.onload=null;picture.onerror=null;picture.style.opacity="0";};
+ picture.style.opacity="0";
+ picture.parentElement.style.background="linear-gradient(130deg,#0576BD,#004F80)";
  picture.src=o.imageUrl||"./assets/"+o.image;
  picture.alt="Klassenfahrt "+o.destination;
  $("summaryPackage").textContent=o.title;
@@ -70,29 +79,60 @@ function showQuote(){
  $("summaryProgram").textContent=state.programIds.length?(state.programIds.length+" Zusatzbaustein"+(state.programIds.length!==1?"e":"")):"Ohne Zusatzbaustein";
  $("summaryStay").textContent=stays.find(x=>x.id===state.accommodation)?.name||"–";
  $("summaryTransport").textContent=rides.find(x=>x.id===state.transport)?.name||"–";
- $("quoteState").textContent=exact?"TARIFBASIERTE BERECHNUNG":canUsePublic?"ÖFFENTLICHER AB-PREIS":"PREIS NICHT BERECHENBAR";
- $("quoteState").classList.toggle("is-exact",exact);
- $("quoteUpdated").textContent=exact?"Tarif "+longDate(r.tariff.verifiedAt):"Quelle "+longDate((o.checkedAt||checkedAt||"2026-10-20").slice(0,10));
- $("pricePrelude").textContent=exact?"Individuell berechneter Reisepreis":canUsePublic?(o.seasonUnknown?"Ab-Preis – nicht für gewähltes Datum bestätigt":"Veröffentlichter Einstiegspreis"):"Kein geprüfter Preis für diese Auswahl";
- $("priceFrom").textContent=exact?"":canUsePublic?"ab":"";
- $("mainPrice").textContent=exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–";
- $("priceUnit").textContent=exact?"pro zahlender Person · Verfügbarkeit ungeprüft":canUsePublic?(state.programIds.length?"pro Person · ohne Zusatzprogramme · unverbindlich":o.seasonUnknown?"pro Person · Saison und Termin nicht bestätigt":"pro Person · nicht verbindlich"):"Nur mit freigegebenem Tarif";
+ $("quoteState").textContent=demoMode?"MUSTERKALKULATION":exact?"TARIFBASIERTE BERECHNUNG":canUsePublic?"ÖFFENTLICHER AB-PREIS":"PREIS NICHT BERECHENBAR";
+ $("quoteState").classList.toggle("is-exact",exact&&!demoMode);
+ $("quoteState").classList.toggle("is-demo",demoMode);
+ $("quoteUpdated").textContent=demoMode?"FIKTIVE TESTWERTE":exact?"Tarif "+longDate(r.tariff.verifiedAt):"Quelle "+longDate((o.checkedAt||checkedAt||"2026-10-20").slice(0,10));
+ $("pricePrelude").textContent=demoMode?(demoOk?"Individuelle Musterrechnung":"Musterrechnung nicht möglich"):exact?"Individuell berechneter Reisepreis":canUsePublic?(o.seasonUnknown?"Ab-Preis – nicht für gewähltes Datum bestätigt":"Veröffentlichter Einstiegspreis"):"Kein geprüfter Preis für diese Auswahl";
+ $("priceFrom").textContent=demoMode?"":exact?"":canUsePublic?"ab":"";
+ $("mainPrice").textContent=demoMode?(demoOk?euro(demo.perPaying):"–"):exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–";
+ $("priceUnit").textContent=demoMode?(demoOk?"pro zahlender Person · rein fiktiver Musterpreis":"Keine Preisberechnung möglich"):exact?"pro zahlender Person · Verfügbarkeit ungeprüft":canUsePublic?(state.programIds.length?"pro Person · ohne Zusatzprogramme · unverbindlich":o.seasonUnknown?"pro Person · Saison und Termin nicht bestätigt":"pro Person · nicht verbindlich"):"Nur mit freigegebenem Tarif";
  $("sourceLink").href=o.source;
  const selectedPublic=selectedProgramDetails();
- $("publicProgramBreakdown").hidden=exact||!selectedPublic.length;
- if(!exact&&selectedPublic.length){
+ $("publicProgramBreakdown").hidden=demoMode||exact||!selectedPublic.length;
+ if(!demoMode&&!exact&&selectedPublic.length){
   const heading='<h4>ÖFFENTLICHE ZUSATZPROGRAMM-AB-PREISE</h4>';
   const lines=selectedPublic.map(x=>'<div class="program-price-line"><span>'+safe(programLabel(x))+'</span><strong>'+(Number.isSafeInteger(x.publicPriceFromCents)&&x.publicPriceFromCents>0?'ab '+euro(x.publicPriceFromCents)+' p. P.':'Preis offen')+'</strong></div>').join("");
   $("publicProgramBreakdown").innerHTML=heading+lines+'<p>Diese separat veröffentlichten Mindest-/Einstiegspreise sind <strong>nicht im angezeigten Paket-Ab-Preis enthalten</strong>. Keine geprüfte Summe für Termin, Gruppe oder Verfügbarkeit.</p>';
  }
- $("exactBreakdown").hidden=!exact;
+ $("exactBreakdown").hidden=demoMode||!exact;
+ $("demoControl").classList.toggle("is-active",demoMode);
+ $("quote").classList.toggle("is-demo",demoMode);
+ $("demoModeBtn").setAttribute("aria-pressed",String(demoMode));
+ $("demoModeBtn").textContent=demoMode?"Musterkalkulation beenden":"Musterkalkulation testen";
+ $("demoHint").textContent=demoMode?"Fiktive Raten – keinerlei verbindliches Angebot.":"Keine echten Klühspies-Tarife oder Preiszusagen.";
+ $("demoDisclaimer").hidden=!demoMode;
+ $("freeSeatNote").innerHTML=demoMode?
+   "<strong>Freiplätze in der Demo:</strong> Reines Rechenbeispiel: Wir nehmen 1 Freiplatz je 12 Teilnehmende an. Diese Regel ist nicht als tatsächlicher Klühspies-Tarif bestätigt.":
+   "<strong>Freiplätze:</strong> Ob und wie viele Freiplätze gewährt werden, richtet sich nach dem jeweiligen Originalangebot und den vertraglich vereinbarten Konditionen.";
+ $("programHelper").textContent=demoMode?
+   "Wähle öffentlich beschriebene Programme aus. Der Mustermodus rechnet mit frei erfundenen Programmgebühren, nicht mit deren veröffentlichten Ab-Preisen.":
+   "Zusätzliche Programmbausteine nach Wunsch. Individuelle Preise werden nur aus freigegebenen Klühspies-Tarifen übernommen.";
+ $("transportHelper").textContent=demoMode?
+   "Alle Anreise- und Unterkunftsaufpreise in der Musterkalkulation sind ausschließlich simuliert.":
+   "Eine abweichende Anreise kann den Preis verändern. Nur geprüfte Kombinationen erhalten einen exakten Gesamtpreis.";
+ $("demoBreakdown").hidden=!demoMode;
+ if(demoMode){
+   if(demoOk){
+     const rows=demo.components.map(item=>'<div class="demo-line"><div><strong>'+safe(item.title)+'</strong><small>'+safe(item.detail)+'</small></div><b>'+euro(item.amount)+'</b></div>').join("");
+     $("demoBreakdown").innerHTML='<div class="demo-breakdown-head"><strong>MUSTER-PREISAUFSCHLÜSSELUNG</strong><span>Fiktive Tariftabelle</span></div>'+
+       '<div class="demo-people"><span>Teilnehmende <b>'+demo.group+'</b></span><span>Beispiel-Freiplätze <b>'+demo.free+'</b></span><span>Zahlende Personen <b>'+demo.paying+'</b></span></div>'+
+       rows+
+       '<div class="demo-total"><span>Beispiel-Gruppenpreis gesamt</span><strong>'+euro(demo.total)+'</strong></div>'+
+       '<div class="demo-average"><span>Durchschnitt je Reisendem (inkl. Freiplätzen)</span><b>'+euro(demo.perTraveler)+'</b></div>'+
+       '<p class="demo-smallprint">Rechnerisch vollständig, aber ausschließlich mit erfundenen Beispielraten. Keine geprüften Klühspies-Tarife, Buchbarkeit oder Verfügbarkeit.</p>';
+   }else{
+     $("demoBreakdown").innerHTML='<p class="demo-smallprint"><strong>Keine Musterrechnung möglich:</strong> '+safe(demo?.reason||"Ungültige Eingaben")+'</p>';
+   }
+ }
+ $("copyBtn").textContent=demoMode?"Musterrechnung kopieren":"Reiseplanung kopieren";
  if(exact){
   $("exactBreakdown").innerHTML='<p><span>Reisende</span><b>'+r.group+'</b></p><p><span>Vertragliche Freiplätze</span><b>'+r.free+'</b></p><p><span>Zahlende Personen</span><b>'+r.paying+'</b></p><p><span>Grundpaket</span><b>'+euro(r.base)+'</b></p>'+(r.program?'<p><span>Zusatzprogramm</span><b>'+euro(r.program)+'</b></p>':"")+(r.fixed?'<p><span>Fixkosten</span><b>'+euro(r.fixed)+'</b></p>':"")+'<hr><p><span>Gruppenpreis gesamt</span><b>'+euro(r.total)+'</b></p>';
  }
- $("statusExplainer").innerHTML=exact?'<strong>Mathematisch aus freigegebenem Tarif kalkuliert.</strong> Grundlage: '+safe(r.tariff.verifiedSource)+'. Noch keine Zusage zur Verfügbarkeit oder Buchbarkeit.':!season?(yearUnverified?'<strong>Für dieses Reisejahr liegt kein geprüfter Preis vor.</strong> Die Demo enthält öffentlich bestätigte Reisepreise für 2027.':'<strong>Außerhalb der veröffentlichten Angebots-Saison.</strong> Bitte anderen Zeitraum wählen oder das Originalangebot prüfen.'):!canUsePublic?'<strong>Individuelle Auswahl ohne belegten Preis.</strong> Für diese Anreise bzw. Unterkunft existiert noch kein freigegebener Tarif.':'<strong>Wichtig:</strong> '+safe(r.reason||"Nur veröffentlichter Einstiegspreis verfügbar.")+' Dieser Ab-Preis ist kein individuelles Angebot.'+(o.seasonUnknown?" Eine Gültigkeit für den gewählten Reisezeitraum ist nicht nachgewiesen.":"");
- $("mobilePrice").textContent=(canUsePublic&&!exact?"ab ":"")+(exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–");
- $("mobileStatus").textContent=exact?"Tarifpreis pro Person":canUsePublic?"Ab-Preis, unverbindlich":"Kein geprüfter Tarif";
- saveDraft();window.__lastQuote={r,o};
+ $("statusExplainer").innerHTML=demoMode?'<strong>Reine Demonstration – keine Preiszusage.</strong> Die Musterkalkulation veranschaulicht Rechenregeln. Alle verwendeten Beträge, Freiplätze und Staffelungen sind frei erfunden und keine Klühspies-Konditionen.':exact?'<strong>Mathematisch aus freigegebenem Tarif kalkuliert.</strong> Grundlage: '+safe(r.tariff.verifiedSource)+'. Noch keine Zusage zur Verfügbarkeit oder Buchbarkeit.':!season?(yearUnverified?'<strong>Für dieses Reisejahr liegt kein geprüfter Preis vor.</strong> Die Demo enthält öffentlich bestätigte Reisepreise für 2027.':'<strong>Außerhalb der veröffentlichten Angebots-Saison.</strong> Bitte anderen Zeitraum wählen oder das Originalangebot prüfen.'):!canUsePublic?'<strong>Individuelle Auswahl ohne belegten Preis.</strong> Für diese Anreise bzw. Unterkunft existiert noch kein freigegebener Tarif.':'<strong>Wichtig:</strong> '+safe(r.reason||"Nur veröffentlichter Einstiegspreis verfügbar.")+' Dieser Ab-Preis ist kein individuelles Angebot.'+(o.seasonUnknown?" Eine Gültigkeit für den gewählten Reisezeitraum ist nicht nachgewiesen.":"");
+ $("mobilePrice").textContent=demoMode?(demoOk?euro(demo.perPaying):"–"):(canUsePublic&&!exact?"ab ":"")+(exact?euro(r.perPaying):canUsePublic?euro(o.priceFromCents):"–");
+ $("mobileStatus").textContent=demoMode?"Musterpreis · nicht verbindlich":exact?"Tarifpreis pro Person":canUsePublic?"Ab-Preis, unverbindlich":"Kein geprüfter Tarif";
+ saveDraft();window.__lastQuote={r,o,demo};
 }
 function rerender(){renderOffers();renderOptions();showQuote()}
 async function refresh(){
@@ -127,9 +167,17 @@ function bind(){
   const b=e.target.closest("[data-counter]");if(b){const k=b.dataset.counter,lo=k==="students"?10:1,hi=k==="students"?999:99;state[k]=Math.min(hi,Math.max(lo,Number(state[k]||0)+Number(b.dataset.delta)));$(k).value=state[k];showQuote()}
  });
  $("resetBtn").addEventListener("click",()=>{state={...defaults};updateFields();rerender();tell("Auswahl zurückgesetzt")});
+ $("demoModeBtn").addEventListener("click",()=>{
+   demoMode=!demoMode;
+   const url=new URL(window.location.href);
+   if(demoMode)url.searchParams.set("demo","1");
+   else url.searchParams.delete("demo");
+   window.history.replaceState(null,"",url.toString());
+   showQuote();
+ });
  $("copyBtn").addEventListener("click",async()=>{
-  const {r,o}=window.__lastQuote,price=r.status==="exact"?euro(r.perPaying)+" pro zahlender Person (Tarifpreis, Verfügbarkeit offen)":$("mainPrice").textContent.trim()==="–"?"Kein geprüfter Preis für diese Auswahl":euro(o.priceFromCents)+" ab pro Person (unverbindlich)";
-  const content=["Klühspies Klassenfahrt – "+o.title,"Termin: "+longDate(state.from)+" – "+$("returnDate").value,"Gruppe: "+state.students+" Schüler:innen, "+state.adults+" Begleitpersonen","Abfahrts-PLZ: "+state.postal,"Programm: "+(selectedProgramDetails().map(programLabel).join(", ")||"Ohne Zusatzbaustein"),"Unterkunft: "+stays.find(x=>x.id===state.accommodation)?.name,"Anreise: "+rides.find(x=>x.id===state.transport)?.name,"Preisstatus: "+price,"Quelle: "+o.source,"Hinweis: Keine bestätigte Verfügbarkeit."].join("\n");
+  const {r,o,demo}=window.__lastQuote,price=demoMode?(demo?.status==="simulation"?euro(demo.perPaying)+" pro zahlender Person, fiktive Musterrechnung":"Keine Musterrechnung möglich"):r.status==="exact"?euro(r.perPaying)+" pro zahlender Person (Tarifpreis, Verfügbarkeit offen)":$("mainPrice").textContent.trim()==="–"?"Kein geprüfter Preis für diese Auswahl":euro(o.priceFromCents)+" ab pro Person (unverbindlich)";
+  const content=[...(demoMode?["MUSTERKALKULATION – KEINE PREISZUSAGE – ALLE BETRÄGE FIKTIV"]:[]),"Klühspies Klassenfahrt – "+o.title,"Termin: "+longDate(state.from)+" – "+$("returnDate").value,"Gruppe: "+state.students+" Schüler:innen, "+state.adults+" Begleitpersonen","Abfahrts-PLZ: "+state.postal,"Programm: "+(selectedProgramDetails().map(programLabel).join(", ")||"Ohne Zusatzbaustein"),"Unterkunft: "+stays.find(x=>x.id===state.accommodation)?.name,"Anreise: "+rides.find(x=>x.id===state.transport)?.name,"Preisstatus: "+price,...(demoMode&&demo?.status==="simulation"?["Fiktiver Gruppenpreis gesamt: "+euro(demo.total),"Fiktive Freiplätze: "+demo.free,"Zahlende Personen: "+demo.paying,...demo.components.map(x=>x.title+": "+euro(x.amount))]:[]),"Quelle: "+o.source,"Hinweis: Keine bestätigte Verfügbarkeit und keine verbindlichen Tarife."].join("\n");
   try{await navigator.clipboard.writeText(content);tell("Reiseplanung kopiert")}catch{tell("Kopieren in diesem Browser nicht möglich")}
  });
  $("printBtn").addEventListener("click",()=>window.print());
